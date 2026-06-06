@@ -9,6 +9,8 @@ interface LeaderboardEntry {
   wins: number;
 }
 
+const MEDALS = ["\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"];
+
 export default function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,12 @@ export default function Leaderboard() {
   const loadLeaderboard = useCallback(async () => {
     try {
       const data = await api.game.leaderboard();
-      setEntries(data);
+      const normalized = data.map((entry: LeaderboardEntry) => ({
+        ...entry,
+        totalWinnings: Number(entry.totalWinnings),
+        wins: Number(entry.wins),
+      }));
+      setEntries(normalized);
     } catch { /* noop */ }
     setLoading(false);
   }, []);
@@ -26,8 +33,6 @@ export default function Leaderboard() {
     const interval = setInterval(loadLeaderboard, 15000);
     return () => clearInterval(interval);
   }, [loadLeaderboard]);
-
-  const medals = ["\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"];
 
   if (loading) {
     return (
@@ -92,7 +97,7 @@ export default function Leaderboard() {
                 color: index < 3 ? "var(--gold)" : "var(--text-dim)",
                 textAlign: "center",
               }}>
-                {index < 3 ? medals[index] : `#${index + 1}`}
+                {index < 3 ? MEDALS[index] : `#${index + 1}`}
               </div>
               {entry.avatar ? (
                 <img

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { COLOR_HEX } from "../lib/constants";
 
 interface RollingDiceProps {
   resultColor: string;
@@ -6,12 +7,6 @@ interface RollingDiceProps {
 }
 
 const DICE_EMOJIS = ["\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685"];
-
-const colorHex: Record<string, string> = {
-  red: "#e74c3c",
-  green: "#2ecc71",
-  blue: "#3498db",
-};
 
 export default function RollingDice({ resultColor, onComplete }: RollingDiceProps) {
   const [emoji, setEmoji] = useState(DICE_EMOJIS[0]);
@@ -40,14 +35,12 @@ export default function RollingDice({ resultColor, onComplete }: RollingDiceProp
       justifyContent: "center",
       padding: "2rem",
     }}>
-      <div
-        style={{
-          fontSize: "5rem",
-          animation: phase === "spinning" ? "spin 0.3s linear infinite" : "bounceIn 0.4s ease-out",
-          filter: phase === "landing" ? `drop-shadow(0 0 20px ${colorHex[resultColor] || "#fff"})` : "none",
-          transition: "filter 0.3s ease",
-        }}
-      >
+      <div style={{
+        fontSize: "5rem",
+        animation: phase === "spinning" ? "spin 0.3s linear infinite" : "bounceIn 0.4s ease-out",
+        filter: phase === "landing" ? `drop-shadow(0 0 20px ${COLOR_HEX[resultColor] || "#fff"})` : "none",
+        transition: "filter 0.3s ease",
+      }}>
         {emoji}
       </div>
       {phase === "landing" && (
@@ -55,10 +48,10 @@ export default function RollingDice({ resultColor, onComplete }: RollingDiceProp
           marginTop: "1rem",
           fontSize: "1.2rem",
           fontWeight: 800,
-          color: colorHex[resultColor] || "#fff",
+          color: COLOR_HEX[resultColor] || "#fff",
           textTransform: "uppercase",
           animation: "fadeIn 0.3s ease-out",
-          textShadow: `0 0 15px ${colorHex[resultColor] || "#fff"}50`,
+          textShadow: `0 0 15px ${COLOR_HEX[resultColor] || "#fff"}50`,
         }}>
           {resultColor}
         </div>

@@ -38,5 +38,6 @@ export const api = {
     state: () => request("/game/state"),
     history: () => request("/game/history"),
     leaderboard: () => request("/game/leaderboard"),
+    roundWinners: (roundId: number) => request(`/game/round/${roundId}/winners`),
   },
 };

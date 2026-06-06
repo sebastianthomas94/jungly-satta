@@ -1,16 +1,11 @@
 import { useState } from "react";
+import { COLOR_HEX } from "../lib/constants";
 import type { WinnerInfo } from "../lib/socket";
 
 interface WinnersListProps {
   winners: WinnerInfo[];
   resultColor: string;
 }
-
-const colorHex: Record<string, string> = {
-  red: "#e74c3c",
-  green: "#2ecc71",
-  blue: "#3498db",
-};
 
 export default function WinnersList({ winners, resultColor }: WinnersListProps) {
   const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
@@ -29,7 +24,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
         </div>
         <div style={{
           display: "inline-block",
-          background: colorHex[resultColor] || "var(--text-dim)",
+          background: COLOR_HEX[resultColor] || "var(--text-dim)",
           padding: "0.5rem 2rem",
           borderRadius: "8px",
           fontWeight: 800,
@@ -66,7 +61,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
           Winners
         </div>
         <div style={{
-          background: colorHex[resultColor] || "var(--text-dim)",
+          background: COLOR_HEX[resultColor] || "var(--text-dim)",
           padding: "0.25rem 0.75rem",
           borderRadius: "6px",
           fontWeight: 700,
@@ -91,13 +86,12 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
           .sort((a, b) => b.payout - a.payout)
           .map((winner, index) => {
             const isExpanded = expandedUserId === winner.userId;
-            const delay = index * 0.08;
 
             return (
               <div
                 key={winner.userId}
                 className="winner-card-enter"
-                style={{ animationDelay: `${delay}s` }}
+                style={{ animationDelay: `${index * 0.08}s` }}
                 onClick={() => setExpandedUserId(isExpanded ? null : winner.userId)}
               >
                 <div style={{
@@ -109,7 +103,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
                   borderRadius: "8px",
                   cursor: "pointer",
                   transition: "background 0.2s ease",
-                  border: isExpanded ? `1px solid ${colorHex[winner.color] || "var(--border)"}` : "1px solid transparent",
+                  border: isExpanded ? `1px solid ${COLOR_HEX[winner.color] || "var(--border)"}` : "1px solid transparent",
                 }}>
                   {winner.avatar ? (
                     <img
@@ -120,7 +114,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
                         height: "32px",
                         borderRadius: "50%",
                         objectFit: "cover",
-                        border: `2px solid ${colorHex[winner.color] || "var(--border)"}`,
+                        border: `2px solid ${COLOR_HEX[winner.color] || "var(--border)"}`,
                       }}
                     />
                   ) : (
@@ -128,7 +122,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
                       width: "32px",
                       height: "32px",
                       borderRadius: "50%",
-                      background: colorHex[winner.color] || "var(--surface2)",
+                      background: COLOR_HEX[winner.color] || "var(--surface2)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
