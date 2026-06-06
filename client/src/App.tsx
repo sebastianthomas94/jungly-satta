@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AuthProvider, useAuth } from "./lib/auth";
+import { GameProvider } from "./lib/gameContext";
 import Login from "./pages/Login";
 import Game from "./pages/Game";
 import Wallet from "./pages/Wallet";
@@ -56,18 +57,14 @@ function AppRoutes() {
       <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
       <Route path="/wallet" element={
         <PrivateRoute>
-          <>
-            <Navbar />
-            <Wallet />
-          </>
+          <Navbar />
+          <Wallet />
         </PrivateRoute>
       } />
       <Route path="/" element={
         <PrivateRoute>
-          <>
-            <Navbar />
-            <Game />
-          </>
+          <Navbar />
+          <Game />
         </PrivateRoute>
       } />
     </Routes>
@@ -78,8 +75,17 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <AppWithGame />
       </AuthProvider>
     </BrowserRouter>
+  );
+}
+
+function AppWithGame() {
+  const { token, refreshBalance } = useAuth();
+  return (
+    <GameProvider token={token} onBalanceRefresh={refreshBalance}>
+      <AppRoutes />
+    </GameProvider>
   );
 }
