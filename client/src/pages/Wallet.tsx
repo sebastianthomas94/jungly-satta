@@ -1,25 +1,45 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useCallback, type FormEvent } from "react";
 import { useAuth } from "../lib/auth";
 import { api } from "../lib/api";
+
+interface Transaction {
+  id: number;
+  type: string;
+  amount: number;
+  createdAt: string;
+}
+
+const TYPE_LABELS: Record<string, string> = {
+  DEPOSIT: "Deposit",
+  WITHDRAW: "Withdraw",
+  BET: "Bet Placed",
+  WIN: "Win",
+};
+
+function typeColor(type: string) {
+  if (type === "WIN") return "var(--green)";
+  if (type === "BET") return "var(--red)";
+  return "var(--text-dim)";
+}
 
 export default function Wallet() {
   const { user, refreshBalance } = useAuth();
   const [depositAmount, setDepositAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadTransactions();
-  }, []);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     try {
       const data = await api.wallet.transactions();
       setTransactions(data);
-    } catch {}
-  };
+    } catch { /* noop */ }
+  }, []);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
 
   const handleDeposit = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,8 +51,8 @@ export default function Wallet() {
       setDepositAmount("");
       await refreshBalance();
       await loadTransactions();
-    } catch (err: any) {
-      setMessage({ type: "error", text: err.message });
+    } catch (err: unknown) {
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Deposit failed" });
     }
     setLoading(false);
   };
@@ -47,26 +67,10 @@ export default function Wallet() {
       setWithdrawAmount("");
       await refreshBalance();
       await loadTransactions();
-    } catch (err: any) {
-      setMessage({ type: "error", text: err.message });
+    } catch (err: unknown) {
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Withdraw failed" });
     }
     setLoading(false);
-  };
-
-  const formatType = (type: string) => {
-    switch (type) {
-      case "DEPOSIT": return "Deposit";
-      case "WITHDRAW": return "Withdraw";
-      case "BET": return "Bet Placed";
-      case "WIN": return "Win";
-      default: return type;
-    }
-  };
-
-  const typeColor = (type: string) => {
-    if (type === "WIN") return "var(--green)";
-    if (type === "BET") return "var(--red)";
-    return "var(--text-dim)";
   };
 
   return (
@@ -157,14 +161,14 @@ export default function Wallet() {
             No transactions yet
           </div>
         ) : (
-          transactions.map((tx: any) => (
+          transactions.map((tx) => (
             <div key={tx.id} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)"
             }}>
               <div>
                 <div style={{ fontWeight: 600, color: typeColor(tx.type) }}>
-                  {formatType(tx.type)}
+                  {TYPE_LABELS[tx.type] || tx.type}
                 </div>
                 <div style={{ fontSize: "0.8rem", color: "var(--text-dim)" }}>
                   {new Date(tx.createdAt).toLocaleString()}

@@ -6,14 +6,15 @@ export default function Login() {
   const { loginWithGoogle } = useAuth();
   const [error, setError] = useState("");
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: { credential?: string }) => {
     setError("");
     try {
       if (credentialResponse.credential) {
         await loginWithGoogle(credentialResponse.credential);
       }
-    } catch (err: any) {
-      setError(err.message || "Authentication failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Authentication failed";
+      setError(msg);
     }
   };
 
