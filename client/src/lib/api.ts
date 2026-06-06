@@ -37,5 +37,6 @@ export const api = {
   game: {
     state: () => request("/game/state"),
     history: () => request("/game/history"),
+    leaderboard: () => request("/game/leaderboard"),
   },
 };

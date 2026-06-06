@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { api } from "./api";
 import { connectSocket, disconnectSocket } from "./socket";
-import type { RoundState } from "./socket";
+import type { RoundState, WinnerInfo } from "./socket";
 
 const GOOGLE_CLIENT_ID = "643362371367-ci57ulekvp6saqhq3o2n1k1mmjiurk8l.apps.googleusercontent.com";
 
@@ -22,6 +22,7 @@ interface AuthContextType {
   refreshBalance: () => Promise<void>;
   roundState: RoundState | null;
   lastResult: { roundId: number; resultColor: string } | null;
+  roundWinners: WinnerInfo[];
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -31,6 +32,15 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
   const [roundState, setRoundState] = useState<RoundState | null>(null);
   const [lastResult, setLastResult] = useState<{ roundId: number; resultColor: string } | null>(null);
+  const [roundWinners, setRoundWinners] = useState<WinnerInfo[]>([]);
+
+  const refreshBalance = useCallback(async () => {
+    if (!token) return;
+    try {
+      const data = await api.wallet.balance();
+      setUser((prev) => prev ? { ...prev, balance: data.balance } : null);
+    } catch { /* noop */ }
+  }, [token]);
 
   useEffect(() => {
     if (token) {
@@ -50,6 +60,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     socket.on("round:new", (state: RoundState) => {
       setRoundState(state);
       setLastResult(null);
+      setRoundWinners([]);
     });
 
     socket.on("round:tick", (data: { roundId: number; timeRemaining: number }) => {
@@ -75,7 +86,8 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
       setLastResult({ roundId: data.roundId, resultColor: data.resultColor });
     });
 
-    socket.on("round:result", () => {
+    socket.on("round:result", (data: { roundId: number; resultColor: string; winners: WinnerInfo[] }) => {
+      setRoundWinners(data.winners || []);
       refreshBalance();
     });
 
@@ -86,7 +98,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     return () => {
       disconnectSocket();
     };
-  }, [token]);
+  }, [token, refreshBalance]);
 
   const loginWithGoogle = async (idToken: string) => {
     const data = await api.auth.google(idToken);
@@ -108,17 +120,9 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     disconnectSocket();
   };
 
-  const refreshBalance = async () => {
-    if (!token) return;
-    try {
-      const data = await api.wallet.balance();
-      setUser((prev) => prev ? { ...prev, balance: data.balance } : null);
-    } catch {}
-  };
-
   return (
     <AuthContext.Provider
-      value={{ user, token, loginWithGoogle, logout, refreshBalance, roundState, lastResult }}
+      value={{ user, token, loginWithGoogle, logout, refreshBalance, roundState, lastResult, roundWinners }}
     >
       {children}
     </AuthContext.Provider>

@@ -28,3 +28,12 @@ export interface RoundState {
   timeRemaining: number;
   resultColor?: string;
 }
+
+export interface WinnerInfo {
+  userId: number;
+  name: string;
+  avatar: string;
+  color: string;
+  amount: number;
+  payout: number;
+}
