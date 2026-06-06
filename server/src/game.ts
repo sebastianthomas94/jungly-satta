@@ -1,12 +1,11 @@
 import { Server } from "socket.io";
 import { prisma } from "./db.js";
+import { ROUND_DURATION_MS, BETTING_CUTOFF_MS, RESULT_DISPLAY_MS } from "./config.js";
 
 const COLORS = ["red", "green", "blue"] as const;
 const SPECIAL_COLOR = "red";
 const REGULAR_PAYOUT = 2;
 const SPECIAL_PAYOUT = 3;
-const ROUND_DURATION_MS = 30000;
-const BETTING_CUTOFF_MS = 5000;
 
 export type GameColor = (typeof COLORS)[number];
 
@@ -17,18 +16,6 @@ export interface RoundState {
   resultColor?: GameColor;
 }
 
-let currentRound: RoundState | null = null;
-let roundTimer: ReturnType<typeof setTimeout> | null = null;
-let io: Server | null = null;
-
-function rollDice(): GameColor {
-  return COLORS[Math.floor(Math.random() * COLORS.length)];
-}
-
-function getPayoutMultiplier(color: GameColor): number {
-  return color === SPECIAL_COLOR ? SPECIAL_PAYOUT : REGULAR_PAYOUT;
-}
-
 export interface WinnerInfo {
   userId: number;
   name: string;
@@ -36,6 +23,42 @@ export interface WinnerInfo {
   color: string;
   amount: number;
   payout: number;
+}
+
+const DICE_WEIGHTS: Record<GameColor, number> = {
+  red: 2,
+  green: 3,
+  blue: 3,
+};
+
+let currentRound: RoundState | null = null;
+let roundTimer: ReturnType<typeof setTimeout> | null = null;
+let tickInterval: ReturnType<typeof setInterval> | null = null;
+let io: Server | null = null;
+
+function rollDice(): GameColor {
+  const totalWeight = COLORS.reduce((sum, c) => sum + DICE_WEIGHTS[c], 0);
+  let roll = Math.random() * totalWeight;
+  for (const color of COLORS) {
+    roll -= DICE_WEIGHTS[color];
+    if (roll <= 0) return color;
+  }
+  return COLORS[COLORS.length - 1];
+}
+
+export function getPayoutMultiplier(color: GameColor): number {
+  return color === SPECIAL_COLOR ? SPECIAL_PAYOUT : REGULAR_PAYOUT;
+}
+
+function clearTimers() {
+  if (roundTimer) {
+    clearTimeout(roundTimer);
+    roundTimer = null;
+  }
+  if (tickInterval) {
+    clearInterval(tickInterval);
+    tickInterval = null;
+  }
 }
 
 async function resolveRound(roundId: number, resultColor: GameColor): Promise<WinnerInfo[]> {
@@ -62,11 +85,7 @@ async function resolveRound(roundId: number, resultColor: GameColor): Promise<Wi
       });
 
       await prisma.transaction.create({
-        data: {
-          userId: bet.userId,
-          type: "WIN",
-          amount: payout,
-        },
+        data: { userId: bet.userId, type: "WIN", amount: payout },
       });
 
       winners.push({
@@ -82,17 +101,15 @@ async function resolveRound(roundId: number, resultColor: GameColor): Promise<Wi
 
   await prisma.round.update({
     where: { id: roundId },
-    data: {
-      resultColor,
-      status: "COMPLETED",
-      endTime: new Date(),
-    },
+    data: { resultColor, status: "COMPLETED", endTime: new Date() },
   });
 
   return winners;
 }
 
 async function startNewRound() {
+  clearTimers();
+
   if (currentRound?.roundId) {
     const resultColor = rollDice();
     currentRound.resultColor = resultColor;
@@ -112,7 +129,7 @@ async function startNewRound() {
       winners,
     });
 
-    await new Promise((r) => setTimeout(r, 3000));
+    await new Promise((r) => setTimeout(r, RESULT_DISPLAY_MS));
   }
 
   const round = await prisma.round.create({
@@ -128,18 +145,17 @@ async function startNewRound() {
   io?.emit("round:new", currentRound);
 
   roundTimer = setTimeout(() => {
-    currentRound!.status = "ROLLING";
-    currentRound!.timeRemaining = 0;
-    io?.emit("round:closing", { roundId: currentRound!.roundId });
+    if (!currentRound) return;
+    currentRound.status = "ROLLING";
+    currentRound.timeRemaining = 0;
+    io?.emit("round:closing", { roundId: currentRound.roundId });
 
-    setTimeout(() => {
-      startNewRound();
-    }, 1000);
+    setTimeout(() => startNewRound(), 1000);
   }, ROUND_DURATION_MS - BETTING_CUTOFF_MS);
 
-  const tickInterval = setInterval(() => {
+  tickInterval = setInterval(() => {
     if (!currentRound || currentRound.status !== "BETTING") {
-      clearInterval(tickInterval);
+      if (tickInterval) clearInterval(tickInterval);
       return;
     }
     currentRound.timeRemaining -= 1000;
@@ -166,4 +182,4 @@ export function canPlaceBet(): boolean {
   return true;
 }
 
-export { COLORS, SPECIAL_COLOR, getPayoutMultiplier };
+export { COLORS, SPECIAL_COLOR };
