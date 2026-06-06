@@ -29,10 +29,22 @@ function getPayoutMultiplier(color: GameColor): number {
   return color === SPECIAL_COLOR ? SPECIAL_PAYOUT : REGULAR_PAYOUT;
 }
 
-async function resolveRound(roundId: number, resultColor: GameColor) {
+export interface WinnerInfo {
+  userId: number;
+  name: string;
+  avatar: string;
+  color: string;
+  amount: number;
+  payout: number;
+}
+
+async function resolveRound(roundId: number, resultColor: GameColor): Promise<WinnerInfo[]> {
   const bets = await prisma.bet.findMany({
     where: { roundId },
+    include: { user: true },
   });
+
+  const winners: WinnerInfo[] = [];
 
   for (const bet of bets) {
     const won = bet.color === resultColor;
@@ -56,6 +68,15 @@ async function resolveRound(roundId: number, resultColor: GameColor) {
           amount: payout,
         },
       });
+
+      winners.push({
+        userId: bet.userId,
+        name: bet.user.name,
+        avatar: bet.user.avatar,
+        color: bet.color,
+        amount: bet.amount,
+        payout,
+      });
     }
   }
 
@@ -67,6 +88,8 @@ async function resolveRound(roundId: number, resultColor: GameColor) {
       endTime: new Date(),
     },
   });
+
+  return winners;
 }
 
 async function startNewRound() {
@@ -80,12 +103,13 @@ async function startNewRound() {
       resultColor,
     });
 
-    await resolveRound(currentRound.roundId, resultColor);
+    const winners = await resolveRound(currentRound.roundId, resultColor);
 
     io?.emit("round:result", {
       roundId: currentRound.roundId,
       resultColor,
       payouts: getPayoutMultiplier(resultColor),
+      winners,
     });
 
     await new Promise((r) => setTimeout(r, 3000));
