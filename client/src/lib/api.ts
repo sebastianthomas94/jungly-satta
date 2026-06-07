@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3001/api";
+const API_BASE = (import.meta.env.VITE_BACKEND_URL ?? "http://localhost:3001") + "/api";
 
 async function request(path: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
@@ -39,5 +39,13 @@ export const api = {
     history: () => request("/game/history"),
     leaderboard: () => request("/game/leaderboard"),
     roundWinners: (roundId: number) => request(`/game/round/${roundId}/winners`),
+  },
+  youtube: {
+    authUrl: () => request("/youtube/auth-url"),
+    connect: (code: string) =>
+      request("/youtube/connect", { method: "POST", body: JSON.stringify({ code }) }),
+    disconnect: () => request("/youtube/disconnect", { method: "DELETE" }),
+    status: () => request("/youtube/status"),
+    reels: () => request("/youtube/reels"),
   },
 };

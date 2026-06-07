@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { api } from "./api";
 
-const GOOGLE_CLIENT_ID = "643362371367-ci57ulekvp6saqhq3o2n1k1mmjiurk8l.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 interface User {
   userId: number;
