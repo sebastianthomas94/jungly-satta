@@ -118,3 +118,54 @@ input {
 .float-anim {
   animation: float 2s ease-in-out infinite;
 }
+
+@keyframes reelsHeartPop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+  80% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+}
+
+.reels-heart-burst {
+  animation: reelsHeartPop 0.8s ease-out forwards;
+  color: #ff2d55;
+  filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.6));
+}
+
+@keyframes reelsLikePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.reels-like-pop {
+  animation: reelsLikePop 0.3s ease-out;
+}
+
+@keyframes reelsCommentsSlideUp {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 250px; opacity: 1; }
+}
+
+.reels-comments-enter {
+  animation: reelsCommentsSlideUp 0.25s ease-out forwards;
+  overflow: hidden;
+}
+
+@keyframes reelsFadeOutUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-30px); }
+}
+
+@keyframes reelsFadeOutDown {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(30px); }
+}
+
+.reels-fade-up {
+  animation: reelsFadeOutUp 0.2s ease-out forwards;
+}
+
+.reels-fade-down {
+  animation: reelsFadeOutDown 0.2s ease-out forwards;
+}

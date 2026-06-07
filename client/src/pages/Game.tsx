@@ -14,6 +14,7 @@ import RoundHistory from "../components/RoundHistory";
 import BetHistory from "../components/BetHistory";
 import LastResultBar from "../components/LastResultBar";
 import MessageBanner from "../components/MessageBanner";
+import ReelsViewer from "../components/ReelsViewer";
 import type { WinnerInfo } from "../lib/socket";
 
 interface BetData {
@@ -218,6 +219,10 @@ export default function Game() {
       )}
 
       {currentBet && <CurrentBet color={currentBet.color} amount={currentBet.amount} />}
+
+      <div style={{ marginBottom: "1.5rem" }}>
+        <ReelsViewer />
+      </div>
 
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 300px", minWidth: 0 }}>

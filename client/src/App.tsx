@@ -4,6 +4,7 @@ import { GameProvider } from "./lib/gameContext";
 import Login from "./pages/Login";
 import Game from "./pages/Game";
 import Wallet from "./pages/Wallet";
+import YouTubeCallback from "./pages/YouTubeCallback";
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -55,6 +56,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
+      <Route path="/auth/youtube/callback" element={<YouTubeCallback />} />
       <Route path="/wallet" element={
         <PrivateRoute>
           <Navbar />
