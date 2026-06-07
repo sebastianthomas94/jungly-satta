@@ -23,34 +23,25 @@ export default function Login() {
   };
 
   return (
-    <div style={{
-      display: "flex", justifyContent: "center", alignItems: "center",
-      minHeight: "100vh", background: "var(--bg)"
-    }}>
-      <div style={{
-        background: "var(--surface)", padding: "3rem", borderRadius: "12px",
-        width: "400px", border: "1px solid var(--border)", textAlign: "center"
-      }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>
+    <div className="flex justify-center items-center min-h-screen bg-bg p-4">
+      <div className="bg-surface p-8 rounded-xl w-full max-w-[400px] border border-border text-center">
+        <div className="text-4xl mb-2">
           &#127922;
         </div>
-        <h1 style={{ marginBottom: "0.5rem", fontSize: "1.8rem" }}>
+        <h1 className="mb-2 text-2xl">
           Jungly Satta
         </h1>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2rem" }}>
+        <p className="text-text-dim mb-8">
           Sign in with your Google account to start playing
         </p>
 
         {error && (
-          <div style={{
-            background: "rgba(231,76,60,0.15)", color: "var(--red)",
-            padding: "0.75rem", borderRadius: "8px", marginBottom: "1rem", fontSize: "0.9rem"
-          }}>
+          <div className="bg-red/15 text-red p-3 rounded-lg mb-4 text-[0.9rem]">
             {error}
           </div>
         )}
 
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="flex justify-center">
           <GoogleLogin
             onSuccess={handleSuccess}
             onError={handleError}

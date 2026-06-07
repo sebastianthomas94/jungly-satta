@@ -15,6 +15,7 @@ import BetHistory from "../components/BetHistory";
 import LastResultBar from "../components/LastResultBar";
 import MessageBanner from "../components/MessageBanner";
 import ReelsViewer from "../components/ReelsViewer";
+import { useIsMobile } from "../lib/hooks";
 import type { WinnerInfo } from "../lib/socket";
 
 interface BetData {
@@ -42,6 +43,7 @@ type GamePhase = "betting" | "closing" | "rolling" | "showing-result";
 
 export default function Game() {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const { roundState, lastResult, roundWinners, refreshBalance } = useGame();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [betAmount, setBetAmount] = useState("");
@@ -152,15 +154,12 @@ export default function Game() {
 
   if (!user) {
     return (
-      <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
-        <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Welcome to Jungly Satta</h2>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2rem" }}>
+      <div className={`text-center ${isMobile ? "py-8 px-4" : "py-16 px-4"}`}>
+        <h2 className={`mb-4 ${isMobile ? "text-2xl" : "text-4xl"}`}>Welcome to Jungly Satta</h2>
+        <p className="text-text-dim mb-8">
           Please login to start playing
         </p>
-        <a href="/login" style={{
-          display: "inline-block", padding: "0.75rem 2rem", background: "var(--blue)",
-          borderRadius: "8px", color: "#fff", fontWeight: 600
-        }}>
+        <a href="/login" className="inline-block py-3 px-8 bg-blue rounded-lg text-white font-semibold">
           Login
         </a>
       </div>
@@ -168,7 +167,7 @@ export default function Game() {
   }
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "1rem" }}>
+    <div className="max-w-[900px] mx-auto px-2 py-4">
       {showOverlay && lastResult && (
         <ResultOverlay
           isWinner={!!isUserWinner}
@@ -188,7 +187,7 @@ export default function Game() {
       />
 
       {phase === "showing-result" && lastResult && (
-        <div style={{ marginBottom: "1.5rem" }} className="overlay-enter">
+        <div className="mb-6 animate-fade-in">
           <WinnersList winners={roundWinners} resultColor={lastResult.resultColor} />
         </div>
       )}
@@ -220,12 +219,12 @@ export default function Game() {
 
       {currentBet && <CurrentBet color={currentBet.color} amount={currentBet.amount} />}
 
-      <div style={{ marginBottom: "1.5rem" }}>
+      <div className="mb-6">
         <ReelsViewer />
       </div>
 
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 300px", minWidth: 0 }}>
+      <div className="game-layout flex gap-4 flex-wrap md:gap-4">
+        <div className="flex-[1_1_300px] min-w-0">
           <RoundHistory
             rounds={roundHistory}
             selectedRound={selectedRound}
@@ -234,7 +233,7 @@ export default function Game() {
           />
           <BetHistory bets={betHistory} />
         </div>
-        <div style={{ flex: "0 0 300px" }}>
+        <div className="game-sidebar flex-[0_0_300px] md:max-md:flex-[1_1_100%]">
           <Leaderboard />
         </div>
       </div>

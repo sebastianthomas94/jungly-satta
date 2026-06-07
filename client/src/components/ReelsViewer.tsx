@@ -93,7 +93,8 @@ export default function ReelsViewer() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const lastTapRef = useRef<number>(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const heartTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const heartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartYRef = useRef<number>(0);
 
   useEffect(() => { saveLikes(likes); }, [likes]);
   useEffect(() => { saveComments(comments); }, [comments]);
@@ -238,23 +239,14 @@ export default function ReelsViewer() {
   if (isCollapsed) {
     return (
       <div
-        style={{
-          background: "var(--surface)",
-          borderRadius: "12px",
-          border: "1px solid var(--border)",
-          padding: "0.75rem",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          cursor: "pointer",
-        }}
+        className="bg-surface rounded-xl border border-border p-3 flex items-center justify-between cursor-pointer"
         onClick={() => setIsCollapsed(false)}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "1.2rem" }}>&#9654;&#65039;</span>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--gold)" }}>Watch Reels</span>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">&#9654;&#65039;</span>
+          <span className="text-[0.85rem] font-semibold text-gold">Watch Reels</span>
         </div>
-        <span style={{ fontSize: "0.75rem", color: "var(--text-dim)" }}>
+        <span className="text-xs text-text-dim">
           Tap to expand
         </span>
       </div>
@@ -262,30 +254,15 @@ export default function ReelsViewer() {
   }
 
   return (
-    <div style={{
-      background: "var(--surface)",
-      borderRadius: "12px",
-      border: "1px solid var(--border)",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "0.5rem 0.75rem",
-        borderBottom: "1px solid var(--border)",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-          <span style={{ fontSize: "1rem" }}>&#127916;</span>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--gold)" }}>Reels</span>
+    <div className="bg-surface rounded-xl border border-border overflow-hidden">
+      <div className="flex justify-between items-center py-2 px-3 border-b border-border">
+        <div className="flex items-center gap-[0.4rem]">
+          <span className="text-base">&#127916;</span>
+          <span className="text-[0.85rem] font-bold text-gold">Reels</span>
           {youtubeConnected ? (
             <button
               onClick={handleDisconnectYouTube}
-              style={{
-                fontSize: "0.6rem", background: "rgba(231,76,60,0.12)", color: "var(--red)",
-                padding: "0.15rem 0.45rem", borderRadius: "10px",
-                border: "none", cursor: "pointer", fontWeight: 600,
-              }}
+              className="text-[0.6rem] bg-red/12 text-red px-[0.45rem] py-[0.15rem] rounded-full border-none cursor-pointer font-semibold"
             >
               Disconnect
             </button>
@@ -293,11 +270,11 @@ export default function ReelsViewer() {
             <button
               onClick={handleConnectYouTube}
               disabled={connecting}
+              className="text-[0.6rem] border-none rounded-full px-[0.45rem] py-[0.15rem] cursor-pointer font-semibold"
               style={{
-                fontSize: "0.6rem", background: connecting ? "var(--border)" : "rgba(52,152,219,0.12)",
-                color: connecting ? "var(--text-dim)" : "var(--blue)",
-                padding: "0.15rem 0.45rem", borderRadius: "10px",
-                border: "none", cursor: connecting ? "not-allowed" : "pointer", fontWeight: 600,
+                background: connecting ? "var(--color-border)" : "rgba(52,152,219,0.12)",
+                color: connecting ? "var(--color-text-dim)" : "var(--color-blue)",
+                pointerEvents: connecting ? "none" : "auto",
               }}
             >
               {connecting ? "..." : "Connect YouTube"}
@@ -306,10 +283,7 @@ export default function ReelsViewer() {
         </div>
         <button
           onClick={() => setIsCollapsed(true)}
-          style={{
-            background: "none", border: "none", color: "var(--text-dim)",
-            fontSize: "1.1rem", cursor: "pointer", padding: "0.1rem 0.3rem", lineHeight: 1,
-          }}
+          className="bg-none border-none text-text-dim text-[1.1rem] cursor-pointer py-[0.1rem] px-[0.3rem] leading-none"
         >
           &#8722;
         </button>
@@ -317,16 +291,16 @@ export default function ReelsViewer() {
 
       <div
         ref={scrollRef}
-        style={{
-          position: "relative",
-          width: "100%",
-          aspectRatio: "9 / 16",
-          maxHeight: "55vh",
-          overflow: "hidden",
-          background: "#000",
-          cursor: "pointer",
-        }}
+        className="relative w-full aspect-[9/16] max-h-[70vh] overflow-hidden bg-black cursor-pointer"
         onClick={handleDoubleTap}
+        onTouchStart={(e) => { touchStartYRef.current = e.touches[0].clientY; }}
+        onTouchEnd={(e) => {
+          const deltaY = touchStartYRef.current - e.changedTouches[0].clientY;
+          if (Math.abs(deltaY) > 50) {
+            if (deltaY > 0) goNext();
+            else goPrev();
+          }
+        }}
       >
         {currentVideo && (
           <iframe
@@ -334,68 +308,42 @@ export default function ReelsViewer() {
             src={embedUrl}
             allow="autoplay; encrypted-media"
             allowFullScreen
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              width: "177.78%",
-              height: "100%",
-              transform: "translate(-50%, -50%) scale(56.25%)",
-              transformOrigin: "center center",
-              border: "none",
-              pointerEvents: showComments ? "none" : "auto",
-            }}
+            className="absolute top-1/2 left-1/2 w-[177.78%] h-full -translate-x-1/2 -translate-y-1/2 scale-[0.5625] origin-center border-none"
+            style={{ pointerEvents: showComments ? "none" : "auto" }}
           />
         )}
 
         {showHeart && (
           <div
-            className="reels-heart-burst"
-            style={{
-              position: "absolute", top: "50%", left: "50%",
-              transform: "translate(-50%, -50%)",
-              fontSize: "4.5rem", zIndex: 10, pointerEvents: "none",
-            }}
+            className="animate-reels-heart-burst absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[4.5rem] z-10 pointer-events-none"
+            style={{ color: "#ff2d55", filter: "drop-shadow(0 0 10px rgba(255,45,85,0.6))" }}
           >
             &#10084;&#65039;
           </div>
         )}
 
-        <div style={{
-          position: "absolute", bottom: 0, left: 0, right: "52px",
-          padding: "0.75rem",
-          background: "linear-gradient(transparent, rgba(0,0,0,0.75))",
-          zIndex: 6, pointerEvents: "none",
-        }}>
-          <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#fff", marginBottom: "0.15rem" }}>
+        <div
+          className="absolute bottom-0 left-0 right-[44px] py-3 px-3 z-[6] pointer-events-none max-[767px]:right-[44px]"
+          style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.75))" }}
+        >
+          <div className="text-[0.8rem] font-bold text-white mb-[0.15rem]">
             @{currentVideo?.creator}
           </div>
-          <div style={{
-            fontSize: "0.7rem", color: "rgba(255,255,255,0.8)",
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
+          <div className="text-[0.7rem] text-white/80 overflow-hidden text-ellipsis whitespace-nowrap">
             {currentVideo?.title}
           </div>
-          <div style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.5)", marginTop: "0.15rem" }}>
+          <div className="text-[0.6rem] text-white/50 mt-[0.15rem]">
             {youtubeConnected ? "From your YouTube" : "Trending picks"}
           </div>
         </div>
 
-        <div style={{
-          position: "absolute", right: "0.4rem", bottom: "0.6rem",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "0.85rem",
-          zIndex: 6,
-        }}>
+        <div className="absolute right-[0.4rem] bottom-[0.6rem] flex flex-col items-center gap-[0.65rem] z-[6] max-[767px]:gap-[0.65rem]">
           <button
             onClick={(e) => { e.stopPropagation(); toggleLike(); }}
-            style={{
-              background: "none", border: "none", display: "flex",
-              flexDirection: "column", alignItems: "center", gap: "0.15rem",
-              cursor: "pointer", padding: "0.2rem",
-            }}
+            className="bg-none border-none flex flex-col items-center gap-[0.15rem] cursor-pointer py-[0.2rem]"
           >
             <span
-              className={isLiked ? "reels-like-pop" : undefined}
+              className={isLiked ? "animate-reels-like-pop" : undefined}
               style={{
                 fontSize: "1.4rem",
                 filter: isLiked ? "none" : "drop-shadow(0 1px 3px rgba(0,0,0,0.5))",
@@ -404,23 +352,19 @@ export default function ReelsViewer() {
             >
               {isLiked ? "\u2764\uFE0F" : "\u2661"}
             </span>
-            <span style={{ fontSize: "0.65rem", color: "#fff", fontWeight: 600 }}>
+            <span className="text-[0.65rem] text-white font-semibold">
               {formatCount(likeCount)}
             </span>
           </button>
 
           <button
             onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
-            style={{
-              background: "none", border: "none", display: "flex",
-              flexDirection: "column", alignItems: "center", gap: "0.15rem",
-              cursor: "pointer", padding: "0.2rem",
-            }}
+            className="bg-none border-none flex flex-col items-center gap-[0.15rem] cursor-pointer py-[0.2rem]"
           >
-            <span style={{ fontSize: "1.4rem", filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.5))" }}>
+            <span className="text-[1.4rem]" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.5))" }}>
               {"\uD83D\uDCAC"}
             </span>
-            <span style={{ fontSize: "0.65rem", color: "#fff", fontWeight: 600 }}>
+            <span className="text-[0.65rem] text-white font-semibold">
               {formatCount(currentComments.length)}
             </span>
           </button>
@@ -430,29 +374,19 @@ export default function ReelsViewer() {
               e.stopPropagation();
               if (currentVideo) window.open(`https://youtube.com/watch?v=${currentVideo.id}`, "_blank");
             }}
-            style={{
-              background: "none", border: "none", display: "flex",
-              flexDirection: "column", alignItems: "center", gap: "0.15rem",
-              cursor: "pointer", padding: "0.2rem",
-            }}
+            className="bg-none border-none flex flex-col items-center gap-[0.15rem] cursor-pointer py-[0.2rem]"
           >
-            <span style={{ fontSize: "1.4rem", filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.5))" }}>
+            <span className="text-[1.4rem]" style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.5))" }}>
               {"\uD83D\uDD17"}
             </span>
-            <span style={{ fontSize: "0.6rem", color: "#fff", fontWeight: 500 }}>Open</span>
+            <span className="text-[0.6rem] text-white font-medium">Open</span>
           </button>
         </div>
 
         {currentIndex > 0 && (
           <button
             onClick={(e) => { e.stopPropagation(); goPrev(); }}
-            style={{
-              position: "absolute", top: "0.4rem", left: "50%", transform: "translateX(-50%)",
-              background: "rgba(0,0,0,0.45)", border: "none", borderRadius: "50%",
-              width: "24px", height: "24px", display: "flex", alignItems: "center",
-              justifyContent: "center", cursor: "pointer", zIndex: 7,
-              color: "#fff", fontSize: "0.7rem", padding: 0,
-            }}
+            className="absolute top-[0.4rem] left-1/2 -translate-x-1/2 bg-black/45 border-none rounded-full w-6 h-6 flex items-center justify-center cursor-pointer z-[7] text-white text-[0.7rem] p-0"
           >
             &#9650;
           </button>
@@ -460,34 +394,27 @@ export default function ReelsViewer() {
 
         <button
           onClick={(e) => { e.stopPropagation(); goNext(); }}
-          style={{
-            position: "absolute", bottom: "0.4rem", left: "50%", transform: "translateX(-50%)",
-            background: "rgba(0,0,0,0.45)", border: "none", borderRadius: "50%",
-            width: "24px", height: "24px", display: "flex", alignItems: "center",
-            justifyContent: "center", cursor: "pointer", zIndex: 7,
-            color: "#fff", fontSize: "0.7rem", padding: 0,
-          }}
+          className="absolute bottom-[0.4rem] left-1/2 -translate-x-1/2 bg-black/45 border-none rounded-full w-6 h-6 flex items-center justify-center cursor-pointer z-[7] text-white text-[0.7rem] p-0"
         >
           &#9660;
         </button>
       </div>
 
-      <div style={{
-        padding: "0.4rem 0.75rem", borderBottom: showComments ? "1px solid var(--border)" : "none",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: "0.35rem",
-      }}>
+      <div
+        className="py-[0.4rem] px-3 flex items-center justify-center gap-[0.35rem]"
+        style={{ borderBottom: showComments ? "1px solid var(--color-border)" : "none" }}
+      >
         {videos.slice(Math.max(0, currentIndex - 2), currentIndex + 5).map((v, idx) => {
           const realIdx = Math.max(0, currentIndex - 2) + idx;
           return (
             <button
               key={`${v.id}-${realIdx}`}
               onClick={() => setCurrentIndex(realIdx)}
+              className="h-[5px] rounded-[2.5px] border-none cursor-pointer transition-all duration-200"
               style={{
                 width: realIdx === currentIndex ? "14px" : "5px",
-                height: "5px", borderRadius: "2.5px",
-                background: realIdx === currentIndex ? "var(--gold)" : "var(--border)",
-                border: "none", cursor: "pointer",
-                transition: "all 0.2s ease", padding: 0,
+                background: realIdx === currentIndex ? "var(--color-gold)" : "var(--color-border)",
+                padding: 0,
               }}
             />
           );
@@ -496,61 +423,48 @@ export default function ReelsViewer() {
 
       {showComments && (
         <div
-          className="reels-comments-enter"
-          style={{
-            background: "var(--surface2)",
-            maxHeight: "220px",
-            display: "flex", flexDirection: "column", overflow: "hidden",
-          }}
+          className="animate-reels-comments-enter bg-surface2 flex flex-col overflow-hidden"
+          style={{ maxHeight: "220px" }}
         >
-          <div style={{
-            padding: "0.5rem 0.75rem", borderBottom: "1px solid var(--border)",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>
+          <div className="py-[0.5rem] px-3 border-b border-border flex justify-between items-center">
+            <span className="text-[0.75rem] font-bold">
               {currentComments.length} Comment{currentComments.length !== 1 ? "s" : ""}
             </span>
             <button
               onClick={() => setShowComments(false)}
-              style={{
-                background: "none", border: "none", color: "var(--text-dim)",
-                fontSize: "0.9rem", cursor: "pointer", padding: "0.1rem 0.3rem", lineHeight: 1,
-              }}
+              className="bg-none border-none text-text-dim text-[0.9rem] cursor-pointer py-[0.1rem] px-[0.3rem] leading-none"
             >
               &#10005;
             </button>
           </div>
 
-          <div style={{
-            flex: 1, overflowY: "auto", padding: "0.4rem 0.75rem",
-            display: "flex", flexDirection: "column", gap: "0.4rem", maxHeight: "130px",
-          }}>
+          <div className="flex-1 overflow-y-auto py-[0.4rem] px-3 flex flex-col gap-[0.4rem] max-h-[130px]">
             {currentComments.length === 0 && (
-              <div style={{ textAlign: "center", color: "var(--text-dim)", fontSize: "0.7rem", padding: "0.75rem 0" }}>
+              <div className="text-center text-text-dim text-[0.7rem] py-3">
                 No comments yet. Be the first!
               </div>
             )}
             {currentComments.map((c) => (
-              <div key={c.id} style={{ display: "flex", gap: "0.4rem", alignItems: "flex-start" }}>
-                <div style={{
-                  width: "20px", height: "20px", borderRadius: "50%",
-                  background: c.user === "You" ? "var(--gold)" : "var(--border)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "0.5rem", fontWeight: 700, flexShrink: 0,
-                  color: c.user === "You" ? "#000" : "var(--text)",
-                }}>
+              <div key={c.id} className="flex gap-[0.4rem] items-start">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[0.5rem] font-bold shrink-0"
+                  style={{
+                    background: c.user === "You" ? "var(--color-gold)" : "var(--color-border)",
+                    color: c.user === "You" ? "#000" : "var(--color-text)",
+                  }}
+                >
                   {c.user === "You" ? "Y" : c.user.charAt(0).toUpperCase()}
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.3rem" }}>
-                    <span style={{ fontSize: "0.65rem", fontWeight: 600, color: c.user === "You" ? "var(--gold)" : "var(--text)" }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-[0.3rem]">
+                    <span className="text-[0.65rem] font-semibold" style={{ color: c.user === "You" ? "var(--color-gold)" : "var(--color-text)" }}>
                       {c.user}
                     </span>
-                    <span style={{ fontSize: "0.55rem", color: "var(--text-dim)" }}>
+                    <span className="text-[0.55rem] text-text-dim">
                       {timeAgo(c.timestamp)}
                     </span>
                   </div>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text)", wordBreak: "break-word" }}>
+                  <div className="text-[0.7rem] text-text break-words">
                     {c.text}
                   </div>
                 </div>
@@ -558,10 +472,7 @@ export default function ReelsViewer() {
             ))}
           </div>
 
-          <div style={{
-            padding: "0.4rem 0.75rem", borderTop: "1px solid var(--border)",
-            display: "flex", gap: "0.4rem", alignItems: "center",
-          }}>
+          <div className="py-[0.4rem] px-3 border-t border-border flex gap-[0.4rem] items-center">
             <input
               type="text"
               value={commentText}
@@ -569,22 +480,16 @@ export default function ReelsViewer() {
               onKeyDown={handleCommentKeyDown}
               placeholder="Add a comment..."
               maxLength={200}
-              style={{
-                flex: 1, background: "var(--bg)", border: "1px solid var(--border)",
-                borderRadius: "16px", padding: "0.35rem 0.65rem",
-                color: "var(--text)", fontSize: "0.7rem", outline: "none",
-              }}
+              className="flex-1 bg-bg border border-border rounded-2xl py-[0.35rem] px-[0.65rem] text-text text-[0.7rem] outline-none"
             />
             <button
               onClick={addComment}
               disabled={!commentText.trim()}
+              className="border-none rounded-full w-[26px] h-[26px] flex items-center justify-center text-[0.8rem] p-0"
               style={{
-                background: commentText.trim() ? "var(--gold)" : "var(--border)",
-                border: "none", borderRadius: "50%", width: "26px", height: "26px",
-                display: "flex", alignItems: "center", justifyContent: "center",
+                background: commentText.trim() ? "var(--color-gold)" : "var(--color-border)",
+                color: commentText.trim() ? "#000" : "var(--color-text-dim)",
                 cursor: commentText.trim() ? "pointer" : "not-allowed",
-                color: commentText.trim() ? "#000" : "var(--text-dim)",
-                fontSize: "0.8rem", padding: 0,
               }}
             >
               &#8593;

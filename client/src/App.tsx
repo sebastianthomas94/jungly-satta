@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import { AuthProvider, useAuth } from "./lib/auth";
 import { GameProvider } from "./lib/gameContext";
+import { useIsMobile } from "./lib/hooks";
 import Login from "./pages/Login";
 import Game from "./pages/Game";
 import Wallet from "./pages/Wallet";
@@ -8,35 +9,31 @@ import YouTubeCallback from "./pages/YouTubeCallback";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const isMobile = useIsMobile();
 
   if (!user) return null;
 
   return (
-    <nav style={{
-      display: "flex", justifyContent: "space-between", alignItems: "center",
-      padding: "0.75rem 1.5rem", background: "var(--surface)",
-      borderBottom: "1px solid var(--border)"
-    }}>
-      <Link to="/" style={{ fontWeight: 800, fontSize: "1.2rem", color: "var(--gold)", textDecoration: "none" }}>
+    <nav className="flex justify-between items-center px-6 py-3 bg-surface border-b border-border flex-wrap gap-2 max-[767px]:p-3 max-[767px]:gap-2">
+      <Link to="/" className="font-extrabold text-lg text-gold no-underline">
         Jungly Satta
       </Link>
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+      <div className="flex items-center gap-6 max-[767px]:gap-2">
         {user.avatar && (
-          <img src={user.avatar} alt={user.name} style={{ width: "28px", height: "28px", borderRadius: "50%" }} />
+          <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full" />
         )}
-        <span style={{ color: "var(--text)", fontSize: "0.9rem" }}>{user.name}</span>
-        <span style={{ color: "var(--gold)", fontWeight: 700 }}>
+        {!isMobile && (
+          <span className="text-text text-sm max-[767px]:hidden">{user.name}</span>
+        )}
+        <span className="text-gold font-bold">
           ${user.balance.toFixed(2)}
         </span>
-        <Link to="/wallet" style={{ color: "var(--text)", fontSize: "0.9rem" }}>
+        <Link to="/wallet" className="text-text text-sm">
           Wallet
         </Link>
         <button
           onClick={logout}
-          style={{
-            background: "none", border: "1px solid var(--border)", borderRadius: "6px",
-            padding: "0.3rem 0.75rem", color: "var(--text-dim)", fontSize: "0.85rem"
-          }}
+          className="bg-none border border-border rounded-md px-3 py-0.5 text-text-dim text-[0.85rem] cursor-pointer"
         >
           Logout
         </button>

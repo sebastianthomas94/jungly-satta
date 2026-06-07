@@ -7,29 +7,18 @@ interface CurrentBetProps {
 
 export default function CurrentBet({ color, amount }: CurrentBetProps) {
   return (
-    <div style={{
-      background: "var(--surface)",
-      borderRadius: "12px",
-      padding: "1.5rem",
-      border: "1px solid var(--border)",
-      marginBottom: "1.5rem",
-      textAlign: "center",
-    }}>
-      <div style={{ fontSize: "0.85rem", color: "var(--text-dim)", marginBottom: "0.5rem" }}>
+    <div className="bg-surface rounded-xl p-6 border border-border mb-6 text-center">
+      <div className="text-[0.85rem] text-text-dim mb-2">
         Your bet this round
       </div>
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
-        <span style={{
-          background: COLOR_HEX[color],
-          padding: "0.4rem 1.5rem",
-          borderRadius: "8px",
-          fontWeight: 700,
-          color: "#fff",
-          textTransform: "uppercase",
-        }}>
+      <div className="flex justify-center items-center gap-4">
+        <span
+          className="px-6 py-[0.4rem] rounded-lg font-bold text-white uppercase"
+          style={{ background: COLOR_HEX[color] }}
+        >
           {color}
         </span>
-        <span style={{ fontSize: "1.3rem", fontWeight: 700 }}>
+        <span className="text-[1.3rem] font-bold">
           ${amount.toFixed(2)}
         </span>
       </div>

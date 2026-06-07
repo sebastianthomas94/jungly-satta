@@ -11,38 +11,15 @@ export default function RoundHistory({ rounds, selectedRound, onSelectRound, onD
   if (rounds.length === 0) return null;
 
   return (
-    <div style={{
-      background: "var(--surface)",
-      borderRadius: "12px",
-      padding: "1.5rem",
-      border: "1px solid var(--border)",
-    }}>
-      <h3 style={{ marginBottom: "1rem" }}>Recent Results</h3>
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+    <div className="bg-surface rounded-xl p-6 border border-border">
+      <h3 className="mb-4">Recent Results</h3>
+      <div className="flex gap-2 flex-wrap">
         {rounds.slice(0, 15).map((round) => (
           <button
             key={round.id}
             onClick={() => onSelectRound(round.id, round.resultColor)}
-            style={{
-              background: COLOR_HEX[round.resultColor] || "var(--text-dim)",
-              padding: "0.3rem 0.8rem",
-              borderRadius: "6px",
-              color: "#fff",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              border: "none",
-              cursor: "pointer",
-              opacity: 0.9,
-              transition: "opacity 0.2s, transform 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "1";
-              e.currentTarget.style.transform = "scale(1.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "0.9";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
+            className="px-3 py-[0.3rem] rounded-md text-white text-[0.85rem] font-semibold border-none cursor-pointer opacity-90 transition-all duration-200 hover:opacity-100 hover:scale-110"
+            style={{ background: COLOR_HEX[round.resultColor] || "var(--color-text-dim)" }}
             title={`Round #${round.id} - Click to see winners`}
           >
             #{round.id} {round.resultColor}
@@ -50,90 +27,58 @@ export default function RoundHistory({ rounds, selectedRound, onSelectRound, onD
         ))}
       </div>
       {selectedRound && (
-        <div style={{
-          marginTop: "1rem",
-          background: "var(--surface2)",
-          borderRadius: "8px",
-          padding: "1rem",
-          border: `1px solid ${COLOR_HEX[selectedRound.resultColor] || "var(--border)"}`,
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "0.75rem",
-          }}>
-            <div style={{ fontSize: "0.95rem", fontWeight: 700 }}>
+        <div
+          className="mt-4 bg-surface2 rounded-lg p-4"
+          style={{ border: `1px solid ${COLOR_HEX[selectedRound.resultColor] || "var(--color-border)"}` }}
+        >
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-[0.95rem] font-bold">
               Round #{selectedRound.roundId} Winners
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{
-                background: COLOR_HEX[selectedRound.resultColor] || "var(--text-dim)",
-                padding: "0.2rem 0.6rem",
-                borderRadius: "4px",
-                color: "#fff",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-              }}>
+            <div className="flex items-center gap-2">
+              <span
+                className="px-[0.6rem] py-[0.2rem] rounded text-white text-xs font-bold uppercase"
+                style={{ background: COLOR_HEX[selectedRound.resultColor] || "var(--color-text-dim)" }}
+              >
                 {selectedRound.resultColor}
               </span>
               <button
                 onClick={onDeselectRound}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "var(--text-dim)",
-                  fontSize: "1.1rem",
-                  cursor: "pointer",
-                  lineHeight: 1,
-                  padding: "0 0.25rem",
-                }}
+                className="bg-transparent border-none text-text-dim text-[1.1rem] cursor-pointer leading-none px-1"
               >
                 &times;
               </button>
             </div>
           </div>
           {selectedRound.loading ? (
-            <div style={{ textAlign: "center", color: "var(--text-dim)", fontSize: "0.85rem", padding: "0.5rem" }}>
+            <div className="text-center text-text-dim text-[0.85rem] p-2">
               Loading winners...
             </div>
           ) : selectedRound.winners.length === 0 ? (
-            <div style={{ textAlign: "center", color: "var(--text-dim)", fontSize: "0.85rem", padding: "0.5rem" }}>
+            <div className="text-center text-text-dim text-[0.85rem] p-2">
               No winners this round
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <div className="flex flex-col gap-[0.4rem]">
               {selectedRound.winners.map((w) => (
-                <div key={w.userId} style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.6rem",
-                  padding: "0.4rem 0.5rem",
-                  background: "rgba(26,35,64,0.6)",
-                  borderRadius: "6px",
-                }}>
+                <div key={w.userId} className="flex items-center gap-[0.6rem] py-[0.4rem] px-[0.5rem] bg-[rgba(26,35,64,0.6)] rounded-md">
                   {w.avatar ? (
-                    <img src={w.avatar} alt={w.name} style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }} />
+                    <img src={w.avatar} alt={w.name} className="w-6 h-6 rounded-full object-cover" />
                   ) : (
-                    <div style={{
-                      width: "24px", height: "24px", borderRadius: "50%",
-                      background: COLOR_HEX[w.color] || "var(--surface2)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: "0.7rem", fontWeight: 700, color: "#fff",
-                    }}>
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[0.7rem] font-bold text-white"
+                      style={{ background: COLOR_HEX[w.color] || "var(--color-surface2)" }}
+                    >
                       {w.name.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "0.8rem", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {w.name}
-                    </div>
-                    <div style={{ fontSize: "0.65rem", color: "var(--text-dim)" }}>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[0.8rem] font-semibold truncate">{w.name}</div>
+                    <div className="text-[0.65rem] text-text-dim">
                       ${w.amount.toFixed(2)} on {w.color}
                     </div>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--green)", whiteSpace: "nowrap" }}>
+                  <div className="font-bold text-[0.85rem] text-green whitespace-nowrap">
                     +${w.payout.toFixed(2)}
                   </div>
                 </div>

@@ -3,30 +3,21 @@ interface MessageBannerProps {
   text: string;
 }
 
-const BG_COLORS: Record<string, string> = {
-  success: "rgba(46,204,113,0.15)",
-  error: "rgba(231,76,60,0.15)",
-  info: "rgba(52,152,219,0.15)",
+const BG_CLASSES: Record<string, string> = {
+  success: "bg-green/15",
+  error: "bg-red/15",
+  info: "bg-blue/15",
 };
 
-const TEXT_COLORS: Record<string, string> = {
-  success: "var(--green)",
-  error: "var(--red)",
-  info: "var(--blue)",
+const TEXT_CLASSES: Record<string, string> = {
+  success: "text-green",
+  error: "text-red",
+  info: "text-blue",
 };
 
 export default function MessageBanner({ type, text }: MessageBannerProps) {
   return (
-    <div style={{
-      background: BG_COLORS[type],
-      color: TEXT_COLORS[type],
-      padding: "0.75rem",
-      borderRadius: "8px",
-      marginBottom: "1rem",
-      textAlign: "center",
-      fontSize: "0.95rem",
-      fontWeight: 600,
-    }}>
+    <div className={`${BG_CLASSES[type]} ${TEXT_CLASSES[type]} p-3 rounded-lg mb-4 text-center text-[0.95rem] font-semibold`}>
       {text}
     </div>
   );

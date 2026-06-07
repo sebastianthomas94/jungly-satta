@@ -7,9 +7,9 @@ export const COLORS = [
 export type ColorId = (typeof COLORS)[number]["id"];
 
 export const COLOR_HEX: Record<string, string> = {
-  red: "#e74c3c",
-  green: "#2ecc71",
-  blue: "#3498db",
+  red: "#E63946",
+  green: "#00E676",
+  blue: "#00B4D8",
 };
 
 export const PAYOUT_MULTIPLIER: Record<string, number> = {

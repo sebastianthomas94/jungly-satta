@@ -1,49 +1,31 @@
-:root {
-  --red: #e74c3c;
-  --green: #2ecc71;
-  --blue: #3498db;
-  --bg: #0a0e17;
-  --surface: #131a2b;
-  --surface2: #1a2340;
-  --text: #e8eaf0;
-  --text-dim: #8892a4;
-  --gold: #f5c542;
-  --border: #233056;
-}
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@theme {
+  --color-bg: #0d0d0d;
+  --color-surface: #16162a;
+  --color-surface2: #1e1e3a;
+  --color-text: #eeeeee;
+  --color-text-dim: #8a8a9e;
+  --color-gold: #FFD700;
+  --color-border: #2a2a4a;
+  --color-red: #E63946;
+  --color-green: #00E676;
+  --color-blue: #00B4D8;
 
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-
-a {
-  color: var(--blue);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-button {
-  cursor: pointer;
-  font-family: inherit;
-}
-
-input {
-  font-family: inherit;
-}
-
-#root {
-  min-height: 100vh;
+  --animate-slide-in-up: slideInUp 0.4s ease-out forwards;
+  --animate-slide-in-down: slideInDown 0.4s ease-out forwards;
+  --animate-fade-in: fadeIn 0.3s ease-out forwards;
+  --animate-fade-in-scale: fadeInScale 0.5s ease-out forwards;
+  --animate-bounce-in: bounceIn 0.5s ease-out forwards;
+  --animate-pulse-anim: pulse 1.5s ease-in-out infinite;
+  --animate-float-anim: float 2s ease-in-out infinite;
+  --animate-spin: spin 0.3s linear infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-reels-heart-burst: reelsHeartPop 0.8s ease-out forwards;
+  --animate-reels-like-pop: reelsLikePop 0.3s ease-out;
+  --animate-reels-comments-enter: reelsCommentsSlideUp 0.25s ease-out forwards;
+  --animate-reels-fade-up: reelsFadeOutUp 0.2s ease-out forwards;
+  --animate-reels-fade-down: reelsFadeOutDown 0.2s ease-out forwards;
 }
 
 @keyframes slideInUp {
@@ -66,26 +48,16 @@ input {
   to { transform: scale(1); opacity: 1; }
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(60px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
 @keyframes bounceIn {
   0% { transform: scale(0.3); opacity: 0; }
   50% { transform: scale(1.05); opacity: 1; }
   70% { transform: scale(0.9); }
   100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 @keyframes float {
@@ -98,25 +70,9 @@ input {
   to { transform: rotate(360deg); }
 }
 
-.overlay-enter {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.winner-card-enter {
-  animation: slideInRight 0.4s ease-out forwards;
-  opacity: 0;
-}
-
-.result-badge-enter {
-  animation: bounceIn 0.5s ease-out forwards;
-}
-
-.pulse-anim {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.float-anim {
-  animation: float 2s ease-in-out infinite;
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes reelsHeartPop {
@@ -126,30 +82,15 @@ input {
   100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
 }
 
-.reels-heart-burst {
-  animation: reelsHeartPop 0.8s ease-out forwards;
-  color: #ff2d55;
-  filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.6));
-}
-
 @keyframes reelsLikePop {
   0% { transform: scale(1); }
   50% { transform: scale(1.4); }
   100% { transform: scale(1); }
 }
 
-.reels-like-pop {
-  animation: reelsLikePop 0.3s ease-out;
-}
-
 @keyframes reelsCommentsSlideUp {
   from { max-height: 0; opacity: 0; }
   to { max-height: 250px; opacity: 1; }
-}
-
-.reels-comments-enter {
-  animation: reelsCommentsSlideUp 0.25s ease-out forwards;
-  overflow: hidden;
 }
 
 @keyframes reelsFadeOutUp {
@@ -160,12 +101,4 @@ input {
 @keyframes reelsFadeOutDown {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(30px); }
-}
-
-.reels-fade-up {
-  animation: reelsFadeOutUp 0.2s ease-out forwards;
-}
-
-.reels-fade-down {
-  animation: reelsFadeOutDown 0.2s ease-out forwards;
 }

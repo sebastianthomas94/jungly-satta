@@ -14,14 +14,8 @@ export default function BetForm({ betAmount, canBet, selectedColor, placing, bal
   const disabled = !canBet || !selectedColor || !betAmount || placing;
 
   return (
-    <div style={{
-      background: "var(--surface)",
-      borderRadius: "12px",
-      padding: "1.5rem",
-      border: "1px solid var(--border)",
-      marginBottom: "1.5rem",
-    }}>
-      <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "0.75rem" }}>
+    <div className="bg-surface rounded-xl p-6 border border-border mb-6">
+      <div className="flex gap-3 items-center mb-3 max-[767px]:flex-col">
         <input
           type="number"
           min="1"
@@ -30,55 +24,29 @@ export default function BetForm({ betAmount, canBet, selectedColor, placing, bal
           onChange={(e) => onAmountChange(e.target.value)}
           placeholder="Bet amount"
           disabled={!canBet || !selectedColor}
-          style={{
-            flex: 1,
-            padding: "0.7rem",
-            background: "var(--surface2)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--text)",
-            fontSize: "1rem",
-            outline: "none",
-          }}
+          className="flex-1 p-[0.7rem] bg-surface2 border border-border rounded-lg text-text text-base outline-none"
         />
         <button
           onClick={onPlaceBet}
           disabled={disabled}
-          style={{
-            padding: "0.7rem 1.5rem",
-            background: "var(--gold)",
-            border: "none",
-            borderRadius: "8px",
-            color: "#000",
-            fontSize: "1rem",
-            fontWeight: 700,
-            opacity: disabled ? 0.4 : 1,
-          }}
+          className="p-[0.7rem] px-6 bg-gold border-none rounded-lg text-black text-base font-bold max-[767px]:w-full"
+          style={{ opacity: disabled ? 0.4 : 1 }}
         >
           {placing ? "..." : "Bet!"}
         </button>
       </div>
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className="flex gap-2 max-[767px]:flex-wrap">
         {QUICK_BET_AMOUNTS.map((amt) => (
           <button
             key={amt}
             onClick={() => onAmountChange(String(amt))}
-            style={{
-              flex: 1,
-              padding: "0.4rem",
-              background: "var(--surface2)",
-              border: "1px solid var(--border)",
-              borderRadius: "6px",
-              color: "var(--text)",
-              fontSize: "0.85rem",
-              cursor: "pointer",
-            }}
+            className="flex-1 py-[0.4rem] bg-surface2 border border-border rounded-md text-text text-[0.85rem] cursor-pointer"
           >
             ${amt}
           </button>
         ))}
       </div>
-      <div style={{ marginTop: "0.5rem", fontSize: "0.8rem", color: "var(--text-dim)" }}>
+      <div className="mt-2 text-[0.8rem] text-text-dim">
         Balance: ${balance?.toFixed(2)}
       </div>
     </div>

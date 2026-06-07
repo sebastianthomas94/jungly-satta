@@ -28,41 +28,34 @@ export default function RollingDice({ resultColor, onComplete }: RollingDiceProp
   }, [onComplete]);
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "2rem",
-    }}>
-      <div style={{
-        fontSize: "5rem",
-        animation: phase === "spinning" ? "spin 0.3s linear infinite" : "bounceIn 0.4s ease-out",
-        filter: phase === "landing" ? `drop-shadow(0 0 20px ${COLOR_HEX[resultColor] || "#fff"})` : "none",
-        transition: "filter 0.3s ease",
-      }}>
+    <div className="flex flex-col items-center justify-center p-8">
+      <div
+        className={phase === "spinning" ? "animate-spin" : "animate-bounce-in"}
+        style={{
+          fontSize: "5rem",
+          filter: phase === "landing" ? `drop-shadow(0 0 20px ${COLOR_HEX[resultColor] || "#fff"})` : "none",
+          transition: "filter 0.3s ease",
+        }}
+      >
         {emoji}
       </div>
       {phase === "landing" && (
-        <div style={{
-          marginTop: "1rem",
-          fontSize: "1.2rem",
-          fontWeight: 800,
-          color: COLOR_HEX[resultColor] || "#fff",
-          textTransform: "uppercase",
-          animation: "fadeIn 0.3s ease-out",
-          textShadow: `0 0 15px ${COLOR_HEX[resultColor] || "#fff"}50`,
-        }}>
+        <div
+          style={{
+            marginTop: "1rem",
+            fontSize: "1.2rem",
+            fontWeight: 800,
+            color: COLOR_HEX[resultColor] || "#fff",
+            textTransform: "uppercase" as const,
+            animation: "fadeIn 0.3s ease-out",
+            textShadow: `0 0 15px ${COLOR_HEX[resultColor] || "#fff"}50`,
+          }}
+        >
           {resultColor}
         </div>
       )}
       {phase === "spinning" && (
-        <div style={{
-          marginTop: "1rem",
-          fontSize: "0.85rem",
-          color: "var(--text-dim)",
-          animation: "pulse 1s ease-in-out infinite",
-        }}>
+        <div className="mt-4 text-[0.85rem] text-text-dim animate-pulse-anim">
           Rolling...
         </div>
       )}

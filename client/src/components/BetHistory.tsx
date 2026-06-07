@@ -16,41 +16,25 @@ export default function BetHistory({ bets }: BetHistoryProps) {
   if (bets.length === 0) return null;
 
   return (
-    <div style={{
-      background: "var(--surface)",
-      borderRadius: "12px",
-      padding: "1.5rem",
-      border: "1px solid var(--border)",
-      marginTop: "1rem",
-    }}>
-      <h3 style={{ marginBottom: "1rem" }}>Your Bet History</h3>
+    <div className="bg-surface rounded-xl p-6 border border-border mt-4">
+      <h3 className="mb-4">Your Bet History</h3>
       {bets.slice(0, 10).map((bet) => (
-        <div key={bet.id} style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "0.5rem 0",
-          borderBottom: "1px solid var(--border)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{
-              background: COLOR_HEX[bet.color] || "var(--text-dim)",
-              padding: "0.2rem 0.6rem",
-              borderRadius: "4px",
-              color: "#fff",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-            }}>
+        <div key={bet.id} className="flex justify-between items-center py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            <span
+              className="px-[0.6rem] py-[0.2rem] rounded text-white text-xs font-semibold"
+              style={{ background: COLOR_HEX[bet.color] || "var(--color-text-dim)" }}
+            >
               {bet.color}
             </span>
-            <span style={{ fontSize: "0.85rem" }}>
+            <span className="text-[0.85rem]">
               ${bet.amount.toFixed(2)}
             </span>
           </div>
-          <div style={{ fontWeight: 600, fontSize: "0.85rem" }}>
+          <div className="font-semibold text-[0.85rem]">
             {bet.won === null ? "Pending" : bet.won
-              ? <span style={{ color: "var(--green)" }}>+${(bet.payout || 0).toFixed(2)}</span>
-              : <span style={{ color: "var(--red)" }}>-${bet.amount.toFixed(2)}</span>
+              ? <span className="text-green">+${(bet.payout || 0).toFixed(2)}</span>
+              : <span className="text-red">-${bet.amount.toFixed(2)}</span>
             }
           </div>
         </div>
