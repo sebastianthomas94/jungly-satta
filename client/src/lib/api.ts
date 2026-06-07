@@ -28,6 +28,12 @@ export const api = {
       request("/wallet/withdraw", { method: "POST", body: JSON.stringify({ amount }) }),
     transactions: () => request("/wallet/transactions"),
   },
+  payment: {
+    createOrder: (amount: number) =>
+      request("/payment/create-order", { method: "POST", body: JSON.stringify({ amount }) }),
+    verify: (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+      request("/payment/verify", { method: "POST", body: JSON.stringify(data) }),
+  },
   bets: {
     place: (color: string, amount: number) =>
       request("/bets/place", { method: "POST", body: JSON.stringify({ color, amount }) }),
