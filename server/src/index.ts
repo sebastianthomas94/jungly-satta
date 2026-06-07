@@ -9,6 +9,7 @@ import authRoutes from "./auth.js";
 import walletRoutes from "./wallet.js";
 import betRoutes from "./bets.js";
 import gameRoutes from "./gameRoutes.js";
+import youtubeRoutes from "./youtube.js";
 import cors from "cors";
 import { CORS_ORIGINS, PORT } from "./config.js";
 
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/bets", betRoutes);
 app.use("/api/game", gameRoutes);
+app.use("/api/youtube", youtubeRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
