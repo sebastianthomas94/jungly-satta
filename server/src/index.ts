@@ -1,3 +1,4 @@
+// @ts-expect-error BigInt serialization for JSON.stringify
 BigInt.prototype.toJSON = function () { return Number(this); };
 
 import express from "express";
