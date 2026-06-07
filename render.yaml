@@ -34,10 +34,8 @@ services:
       - key: RESULT_DISPLAY_MS
         value: 3000
 
-  - type: web
+  - type: static
     name: jungly-satta-client
-    runtime: static
-    plan: free
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: dist
