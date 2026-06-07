@@ -32,7 +32,7 @@ router.get("/leaderboard", async (_req, res) => {
     totalWinnings: number;
     wins: number;
   }>>`
-    SELECT u.id, u.name, u.avatar,
+    SELECT CAST(u.id AS INTEGER) as id, u.name, u.avatar,
       CAST(COALESCE(SUM(b.payout), 0) AS REAL) as totalWinnings,
       CAST(COUNT(b.id) AS INTEGER) as wins
     FROM User u

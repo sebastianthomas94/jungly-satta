@@ -1,3 +1,5 @@
+BigInt.prototype.toJSON = function () { return Number(this); };
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
