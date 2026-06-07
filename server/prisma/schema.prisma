@@ -19,6 +19,7 @@ model User {
   createdAt         DateTime      @default(now())
   bets              Bet[]
   transactions      Transaction[]
+  payments          Payment[]
 }
 
 model Round {
@@ -50,4 +51,17 @@ model Transaction {
   amount    Float
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  razorpayOrderId   String   @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount            Float
+  currency          String   @default("INR")
+  status            String   @default("PENDING")
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
 }
