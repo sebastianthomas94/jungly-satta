@@ -59,7 +59,7 @@ export default function WinnersList({ winners, resultColor }: WinnersListProps) 
                 <div
                   className="flex items-center gap-3 py-[0.6rem] px-3 rounded-lg cursor-pointer transition-colors duration-200"
                   style={{
-                    background: isExpanded ? "var(--color-surface2)" : "rgba(26,35,64,0.6)",
+                    background: isExpanded ? "var(--color-surface2)" : "rgba(34,29,20,0.6)",
                     border: isExpanded ? `1px solid ${COLOR_HEX[winner.color] || "var(--color-border)"}` : "1px solid transparent",
                   }}
                 >

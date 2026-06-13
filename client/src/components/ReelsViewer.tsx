@@ -272,7 +272,7 @@ export default function ReelsViewer() {
               disabled={connecting}
               className="text-[0.6rem] border-none rounded-full px-[0.45rem] py-[0.15rem] cursor-pointer font-semibold"
               style={{
-                background: connecting ? "var(--color-border)" : "rgba(52,152,219,0.12)",
+                background: connecting ? "var(--color-border)" : "rgba(255,215,0,0.12)",
                 color: connecting ? "var(--color-text-dim)" : "var(--color-blue)",
                 pointerEvents: connecting ? "none" : "auto",
               }}

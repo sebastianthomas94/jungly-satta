@@ -61,7 +61,7 @@ export default function RoundHistory({ rounds, selectedRound, onSelectRound, onD
           ) : (
             <div className="flex flex-col gap-[0.4rem]">
               {selectedRound.winners.map((w) => (
-                <div key={w.userId} className="flex items-center gap-[0.6rem] py-[0.4rem] px-[0.5rem] bg-[rgba(26,35,64,0.6)] rounded-md">
+                <div key={w.userId} className="flex items-center gap-[0.6rem] py-[0.4rem] px-[0.5rem] bg-[rgba(34,29,20,0.6)] rounded-md">
                   {w.avatar ? (
                     <img src={w.avatar} alt={w.name} className="w-6 h-6 rounded-full object-cover" />
                   ) : (

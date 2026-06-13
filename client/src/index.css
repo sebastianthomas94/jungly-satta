@@ -1,13 +1,22 @@
 @import "tailwindcss";
 
+@layer base {
+  body,
+  #root {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+  }
+}
+
 @theme {
-  --color-bg: #0d0d0d;
-  --color-surface: #16162a;
-  --color-surface2: #1e1e3a;
-  --color-text: #eeeeee;
-  --color-text-dim: #8a8a9e;
+  --color-bg: #0a0908;
+  --color-surface: #17140e;
+  --color-surface2: #221d14;
+  --color-text: #f0e6cf;
+  --color-text-dim: #978c75;
   --color-gold: #FFD700;
-  --color-border: #2a2a4a;
+  --color-border: #342d1c;
   --color-red: #E63946;
   --color-green: #00E676;
   --color-blue: #00B4D8;

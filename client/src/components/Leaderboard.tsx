@@ -63,8 +63,8 @@ export default function Leaderboard() {
               className="animate-slide-in-right flex items-center gap-[0.65rem] py-2 px-[0.6rem] rounded-lg"
               style={{
                 animationDelay: `${index * 0.05}s`,
-                background: index < 3 ? "rgba(245,197,66,0.08)" : "rgba(26,35,64,0.4)",
-                border: index < 3 ? "1px solid rgba(245,197,66,0.2)" : "1px solid transparent",
+                background: index < 3 ? "rgba(255,215,0,0.08)" : "rgba(34,29,20,0.4)",
+                border: index < 3 ? "1px solid rgba(255,215,0,0.2)" : "1px solid transparent",
               }}
             >
               <div
