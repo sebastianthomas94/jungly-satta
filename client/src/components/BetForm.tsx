@@ -10,45 +10,58 @@ interface BetFormProps {
   onPlaceBet: () => void;
 }
 
-export default function BetForm({ betAmount, canBet, selectedColor, placing, balance, onAmountChange, onPlaceBet }: BetFormProps) {
+export default function BetForm({ betAmount, canBet, selectedColor, placing, onAmountChange, onPlaceBet }: BetFormProps) {
   const disabled = !canBet || !selectedColor || !betAmount || placing;
 
   return (
-    <div className="bg-surface rounded-xl p-6 border border-border mb-6">
-      <div className="flex gap-3 items-center mb-3 max-[767px]:flex-col">
+    <div className="bg-surface2/60 rounded-full p-2 border border-border flex items-center gap-2 max-md:flex-col max-md:rounded-3xl max-md:p-4 shadow-lg w-full mb-6">
+      <div className="flex-1 flex items-center bg-bg/50 rounded-full px-6 py-4 max-md:w-full max-md:justify-between border border-white/5">
         <input
           type="number"
           min="1"
           step="0.01"
           value={betAmount}
           onChange={(e) => onAmountChange(e.target.value)}
-          placeholder="Bet amount"
+          placeholder="Bet Amount"
           disabled={!canBet || !selectedColor}
-          className="flex-1 p-[0.7rem] bg-surface2 border border-border rounded-lg text-text text-base outline-none"
+          className="bg-transparent border-none outline-none text-text text-lg w-full placeholder-text-dim/50 font-medium disabled:opacity-50"
         />
-        <button
-          onClick={onPlaceBet}
-          disabled={disabled}
-          className="p-[0.7rem] px-6 bg-gold border-none rounded-lg text-black text-base font-bold max-[767px]:w-full"
-          style={{ opacity: disabled ? 0.4 : 1 }}
-        >
-          {placing ? "..." : "Bet!"}
-        </button>
+        
+        <div className="flex items-center gap-2 max-md:hidden shrink-0">
+          {QUICK_BET_AMOUNTS.map((amt) => (
+            <button
+              key={amt}
+              onClick={() => onAmountChange(String(amt))}
+              disabled={!canBet || !selectedColor}
+              className="px-3 py-1.5 rounded-full bg-surface2 border border-white/10 text-text-dim text-sm font-medium hover:text-white hover:bg-surface transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ₹{amt}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="flex gap-2 max-[767px]:flex-wrap">
+
+      {/* Mobile quick chips */}
+      <div className="md:hidden flex items-center justify-between w-full gap-2">
         {QUICK_BET_AMOUNTS.map((amt) => (
           <button
             key={amt}
             onClick={() => onAmountChange(String(amt))}
-            className="flex-1 py-[0.4rem] bg-surface2 border border-border rounded-md text-text text-[0.85rem] cursor-pointer"
+            disabled={!canBet || !selectedColor}
+            className="flex-1 py-2 rounded-full bg-surface2 border border-white/10 text-text-dim text-sm font-medium cursor-pointer disabled:opacity-50"
           >
-            ${amt}
+            ₹{amt}
           </button>
         ))}
       </div>
-      <div className="mt-2 text-[0.8rem] text-text-dim">
-        Balance: ${balance?.toFixed(2)}
-      </div>
+
+      <button
+        onClick={onPlaceBet}
+        disabled={disabled}
+        className="btn-gold rounded-full px-10 py-4 font-bold text-lg max-md:w-full tracking-wide shrink-0 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {placing ? "PLACING..." : "PLACE BET"}
+      </button>
     </div>
   );
 }

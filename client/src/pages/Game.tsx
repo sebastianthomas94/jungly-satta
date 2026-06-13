@@ -4,7 +4,6 @@ import { useGame } from "../lib/gameContext";
 import { api } from "../lib/api";
 import { PAYOUT_MULTIPLIER } from "../lib/constants";
 import WinnersList from "../components/WinnersList";
-import Leaderboard from "../components/Leaderboard";
 import ResultOverlay from "../components/ResultOverlay";
 import GameTimer from "../components/GameTimer";
 import ColorCards from "../components/ColorCards";
@@ -15,7 +14,6 @@ import BetHistory from "../components/BetHistory";
 import LastResultBar from "../components/LastResultBar";
 import MessageBanner from "../components/MessageBanner";
 import ReelsViewer from "../components/ReelsViewer";
-import { useIsMobile } from "../lib/hooks";
 import type { WinnerInfo } from "../lib/socket";
 
 interface BetData {
@@ -43,7 +41,6 @@ type GamePhase = "betting" | "closing" | "rolling" | "showing-result";
 
 export default function Game() {
   const { user } = useAuth();
-  const isMobile = useIsMobile();
   const { roundState, lastResult, roundWinners, refreshBalance } = useGame();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [betAmount, setBetAmount] = useState("");
@@ -152,22 +149,10 @@ export default function Game() {
     setPlacing(false);
   };
 
-  if (!user) {
-    return (
-      <div className={`text-center ${isMobile ? "py-8 px-4" : "py-16 px-4"}`}>
-        <h2 className={`mb-4 ${isMobile ? "text-2xl" : "text-4xl"}`}>Welcome to Jungly Satta</h2>
-        <p className="text-text-dim mb-8">
-          Please login to start playing
-        </p>
-        <a href="/login" className="inline-block py-3 px-8 bg-blue rounded-lg text-white font-semibold">
-          Login
-        </a>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
-    <div className="max-w-[900px] mx-auto px-2 py-4">
+    <div className="max-w-[1200px] mx-auto w-full relative">
       {showOverlay && lastResult && (
         <ResultOverlay
           isWinner={!!isUserWinner}
@@ -177,53 +162,84 @@ export default function Game() {
         />
       )}
 
-      <GameTimer
-        roundState={roundState}
-        phase={phase}
-        timeLeft={timeLeft}
-        canBet={canBet}
-        lastResult={lastResult}
-        onRollingComplete={handleRollingComplete}
-      />
-
-      {phase === "showing-result" && lastResult && (
-        <div className="mb-6 animate-fade-in">
-          <WinnersList winners={roundWinners} resultColor={lastResult.resultColor} />
-        </div>
-      )}
-
-      {lastResult && phase === "betting" && (
-        <LastResultBar resultColor={lastResult.resultColor} />
-      )}
-
       {message && <MessageBanner type={message.type} text={message.text} />}
 
-      <ColorCards
-        selectedColor={selectedColor}
-        canBet={canBet}
-        hasBet={!!currentBet}
-        onSelect={setSelectedColor}
-      />
+      {/* Main Grid Layout */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        
+        {/* Left Column: Betting Dashboard */}
+        <div className="flex-1 flex flex-col gap-8">
+          
+          <GameTimer
+            roundState={roundState}
+            phase={phase}
+            timeLeft={timeLeft}
+            canBet={canBet}
+            lastResult={lastResult}
+            onRollingComplete={handleRollingComplete}
+          />
 
-      {!currentBet && (
-        <BetForm
-          betAmount={betAmount}
-          canBet={canBet}
-          selectedColor={selectedColor}
-          placing={placing}
-          balance={user?.balance}
-          onAmountChange={setBetAmount}
-          onPlaceBet={handlePlaceBet}
-        />
-      )}
+          {phase === "showing-result" && lastResult && (
+            <div className="animate-fade-in">
+              <WinnersList winners={roundWinners} resultColor={lastResult.resultColor} />
+            </div>
+          )}
 
-      {currentBet && <CurrentBet color={currentBet.color} amount={currentBet.amount} />}
+          {lastResult && phase === "betting" && (
+            <LastResultBar resultColor={lastResult.resultColor} />
+          )}
 
-      <div className="mb-6">
-        <ReelsViewer />
+          <ColorCards
+            selectedColor={selectedColor}
+            canBet={canBet}
+            hasBet={!!currentBet}
+            onSelect={setSelectedColor}
+          />
+
+          {!currentBet && (
+            <BetForm
+              betAmount={betAmount}
+              canBet={canBet}
+              selectedColor={selectedColor}
+              placing={placing}
+              balance={user?.balance}
+              onAmountChange={setBetAmount}
+              onPlaceBet={handlePlaceBet}
+            />
+          )}
+
+          {currentBet && <CurrentBet color={currentBet.color} amount={currentBet.amount} />}
+
+          {/* Recent Winners Preview (Mocked for dashboard) */}
+          <div className="flex items-center gap-3 text-sm text-text-dim px-4">
+            <span>Recent Winners:</span>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-gold/20 flex items-center justify-center text-xs">🐯</div>
+              <span className="text-gold">₹2000</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-gold/20 flex items-center justify-center text-xs">🐯</div>
+              <span className="text-gold">₹300</span>
+            </div>
+          </div>
+          
+        </div>
+
+        {/* Right Column: Reels / Social */}
+        <div className="lg:w-[360px] shrink-0">
+          <div className="border border-gold/30 rounded-2xl p-1 bg-surface2/40 shadow-2xl overflow-hidden relative">
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-[90%]">
+              <button className="w-full py-2 bg-black/60 backdrop-blur border border-gold/50 rounded-lg text-gold font-semibold text-sm flex items-center justify-center gap-2 hover:bg-black/80 transition-colors">
+                <span className="text-red">▶</span> Connect YouTube
+              </button>
+            </div>
+            <ReelsViewer />
+          </div>
+        </div>
       </div>
 
-      <div className="game-layout flex gap-4 flex-wrap md:gap-4">
+      {/* History Sections at bottom */}
+      <div className="mt-12 flex gap-4 flex-wrap md:gap-4 border-t border-border/50 pt-8">
         <div className="flex-[1_1_300px] min-w-0">
           <RoundHistory
             rounds={roundHistory}
@@ -231,10 +247,9 @@ export default function Game() {
             onSelectRound={handleRoundClick}
             onDeselectRound={() => setSelectedRound(null)}
           />
-          <BetHistory bets={betHistory} />
         </div>
-        <div className="game-sidebar flex-[0_0_300px] md:max-md:flex-[1_1_100%]">
-          <Leaderboard />
+        <div className="flex-[1_1_300px] min-w-0">
+          <BetHistory bets={betHistory} />
         </div>
       </div>
     </div>

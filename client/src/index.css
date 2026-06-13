@@ -4,19 +4,22 @@
   body,
   #root {
     background-color: var(--color-bg);
+    background-image: radial-gradient(circle at 50% 0%, #1a1610 0%, #0a0908 60%);
     color: var(--color-text);
     min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
 @theme {
   --color-bg: #0a0908;
-  --color-surface: #17140e;
-  --color-surface2: #221d14;
+  --color-surface: rgba(23, 20, 14, 0.6);
+  --color-surface2: rgba(34, 29, 20, 0.4);
   --color-text: #f0e6cf;
   --color-text-dim: #978c75;
   --color-gold: #FFD700;
-  --color-border: #342d1c;
+  --color-gold-dim: #b39a00;
+  --color-border: rgba(255, 215, 0, 0.15);
   --color-red: #E63946;
   --color-green: #00E676;
   --color-blue: #00B4D8;
@@ -35,6 +38,52 @@
   --animate-reels-comments-enter: reelsCommentsSlideUp 0.25s ease-out forwards;
   --animate-reels-fade-up: reelsFadeOutUp 0.2s ease-out forwards;
   --animate-reels-fade-down: reelsFadeOutDown 0.2s ease-out forwards;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface backdrop-blur-md border border-border shadow-[0_4px_30px_rgba(0,0,0,0.5)];
+  }
+  .glass-button-red {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(139, 0, 0, 0.6) 100%);
+    border: 1px solid rgba(230, 57, 70, 0.5);
+    box-shadow: 0 0 15px rgba(230, 57, 70, 0.2), inset 0 0 10px rgba(230, 57, 70, 0.1);
+  }
+  .glass-button-red:hover:not(:disabled) {
+    box-shadow: 0 0 25px rgba(230, 57, 70, 0.4), inset 0 0 15px rgba(230, 57, 70, 0.2);
+  }
+  .glass-button-green {
+    background: linear-gradient(135deg, rgba(0, 230, 118, 0.2) 0%, rgba(0, 100, 0, 0.6) 100%);
+    border: 1px solid rgba(0, 230, 118, 0.5);
+    box-shadow: 0 0 15px rgba(0, 230, 118, 0.2), inset 0 0 10px rgba(0, 230, 118, 0.1);
+  }
+  .glass-button-green:hover:not(:disabled) {
+    box-shadow: 0 0 25px rgba(0, 230, 118, 0.4), inset 0 0 15px rgba(0, 230, 118, 0.2);
+  }
+  .glass-button-blue {
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.2) 0%, rgba(0, 0, 139, 0.6) 100%);
+    border: 1px solid rgba(0, 180, 216, 0.5);
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.2), inset 0 0 10px rgba(0, 180, 216, 0.1);
+  }
+  .glass-button-blue:hover:not(:disabled) {
+    box-shadow: 0 0 25px rgba(0, 180, 216, 0.4), inset 0 0 15px rgba(0, 180, 216, 0.2);
+  }
+  .btn-gold {
+    background: linear-gradient(180deg, #FFE259 0%, #FFA751 100%);
+    color: #4a2e00;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(255, 167, 81, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  }
+  .btn-gold:hover:not(:disabled) {
+    background: linear-gradient(180deg, #FFF080 0%, #FFB66A 100%);
+    box-shadow: 0 6px 20px rgba(255, 167, 81, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  .text-gradient-gold {
+    background: linear-gradient(180deg, #FFE259 0%, #FFA751 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 @keyframes slideInUp {

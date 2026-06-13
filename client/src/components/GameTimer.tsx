@@ -12,43 +12,77 @@ interface GameTimerProps {
   onRollingComplete: () => void;
 }
 
-export default function GameTimer({ roundState, phase, timeLeft, canBet, lastResult, onRollingComplete }: GameTimerProps) {
+export default function GameTimer({ roundState, phase, timeLeft, lastResult, onRollingComplete }: GameTimerProps) {
+  const progress = Math.max(0, Math.min(100, (timeLeft / 30) * 100));
+  const circleRadius = 70;
+  const circumference = 2 * Math.PI * circleRadius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
   return (
-    <div className="bg-surface rounded-xl p-6 border border-border mb-6 text-center overflow-hidden">
+    <div className="flex flex-col items-center justify-center p-8 relative min-h-[250px]">
+      {/* Background decorations for the jungle/gold theme */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gold/5 via-transparent to-transparent opacity-50 blur-xl pointer-events-none"></div>
+
       {phase === "rolling" && lastResult ? (
         <RollingDice
           resultColor={lastResult.resultColor}
           onComplete={onRollingComplete}
         />
       ) : phase === "rolling" ? (
-        <div className="p-8">
-          <div style={{ fontSize: "3rem", fontWeight: 800, color: "var(--color-gold)" }}>
-            &#127922;
+        <div className="flex flex-col items-center justify-center animate-pulse">
+          <div className="text-5xl font-bold text-gold drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]">
+            🎲
           </div>
-          <div className="text-sm text-text-dim mt-2">
-            Rolling...
-          </div>
+          <div className="text-gold mt-4 font-semibold tracking-wider">ROLLING...</div>
         </div>
       ) : (
-        <>
-          <div className="text-[0.85rem] text-text-dim mb-2">
-            {phase === "closing" ? "No more bets!" : canBet ? "Place your bets!" : "Waiting..."}
+        <div className="relative flex items-center justify-center">
+          {/* Outer glow circles */}
+          <div className="absolute inset-0 rounded-full border border-gold/20 scale-125 animate-[spin_10s_linear_infinite]"></div>
+          <div className="absolute inset-0 rounded-full border border-gold/10 scale-150 animate-[spin_15s_linear_infinite_reverse]"></div>
+
+          <svg className="w-48 h-48 transform -rotate-90 drop-shadow-[0_0_15px_rgba(255,215,0,0.4)]">
+            {/* Background circle */}
+            <circle
+              cx="96"
+              cy="96"
+              r={circleRadius}
+              className="stroke-gold/20"
+              strokeWidth="8"
+              fill="rgba(34, 29, 20, 0.6)"
+            />
+            {/* Progress circle */}
+            <circle
+              cx="96"
+              cy="96"
+              r={circleRadius}
+              className={`transition-all duration-1000 ease-linear ${phase === "closing" ? "stroke-red" : "stroke-gold"}`}
+              strokeWidth="8"
+              strokeLinecap="round"
+              fill="transparent"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              style={{ filter: `drop-shadow(0 0 8px ${phase === "closing" ? "rgba(230,57,70,0.8)" : "rgba(255,215,0,0.8)"})` }}
+            />
+          </svg>
+
+          {/* Center Text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span 
+              className={`text-5xl font-extrabold tracking-tighter ${phase === "closing" ? "text-red animate-pulse" : "text-gold"}`}
+              style={{ textShadow: `0 0 20px ${phase === "closing" ? "rgba(230,57,70,0.5)" : "rgba(255,215,0,0.5)"}` }}
+            >
+              {timeLeft}
+            </span>
+            <span className="text-gold-dim text-sm font-medium mt-1">30s</span>
           </div>
-          <div
-            className="font-extrabold tabular-nums max-[767px]:text-[2.5rem] max-[400px]:text-3xl"
-            style={{
-              fontSize: "3rem",
-              color: phase === "closing" ? "var(--color-red)" : canBet ? "var(--color-green)" : "var(--color-text-dim)",
-            }}
-          >
-            {phase === "closing" ? `${timeLeft}s` : canBet ? `${timeLeft}s` : "--"}
-          </div>
-          {roundState?.roundId && (
-            <div className="text-[0.75rem] text-text-dim mt-2">
-              Round #{roundState.roundId}
-            </div>
-          )}
-        </>
+        </div>
+      )}
+      
+      {roundState?.roundId && (
+        <div className="mt-8 text-xs font-semibold tracking-widest text-gold-dim uppercase opacity-70">
+          Round #{roundState.roundId}
+        </div>
       )}
     </div>
   );
